@@ -1,7 +1,21 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import Swal from 'sweetalert2';
+import { LanguageService } from 'src/app/core/services/language.service';
 
+const yourHeader: HttpHeaders = new HttpHeaders({
+  Authorization: 'Bearer fake-jwt-token'
+});
+
+const headerDict = {
+  'Content-Type': 'application/json',
+  'Accept': 'application/json',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+const requestOptions = {                                                                                                                                                                                 
+  headers: new HttpHeaders(headerDict), 
+};
 
 @Component({
   selector: 'app-macro',
@@ -9,32 +23,40 @@ import Swal from 'sweetalert2';
   styleUrls: ['./macro.component.scss']
 })
 export class MacroComponent implements OnInit {
+  
   // bread crumb items
-  breadCrumbItems: Array<{}>;
+  breadCrumbItems!: Array<{}>;
   APIBasicPath: string = 'https://trigger.macrodroid.com/69b39d25-9389-4186-b365-ba82fc441788/mzmd-basic';
   APIAdvancePath: string = 'https://trigger.macrodroid.com/69b39d25-9389-4186-b365-ba82fc441788/mzmd-advance';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, public languageService: LanguageService) { }
 
   ngOnInit() {
     this.breadCrumbItems = [{ label: 'Device' }, { label: 'My Zone', active: true }];
   }
 
-  getCall(id) {
-    console.log(id);
-    // const headers = { 'Authorization': 'Bearer my-token', 'My-Custom-Header': 'foobar' }
-    let URL = this.APIBasicPath + '?id='+id;
-    this.http.get(URL, {responseType: 'text'}).subscribe(data => {
-      console.log("Success: ", data);
-      alert("Success: "+ data);
-    })
+  getCall(id: string) {
+    setTimeout(() => {
+      console.log("Delayed for "+this.languageService.delayTimer+" second.");
+      console.log(id);
+      // const headers = { 'Authorization': 'Bearer my-token', 'My-Custom-Header': 'foobar' }
+      let URL = this.APIBasicPath + '?id='+id;
+      this.http.get(URL, {responseType: 'text', headers: {
+        "access-control-allow-origin": "*",
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Methods': '*',
+      }}).subscribe(data => {
+        console.log("Success: ", data);
+        alert("Success: "+ data);
+      })
+    }, (this.languageService.delayTimer*1000));
   }
 
 
   // Advanced Settings
 
   // Dropdown Selectors
-  async dropdownSwal(id) {
+  async dropdownSwal(id: string) {
     const ipAPI = '//api.ipify.org?format=json'
     const inputValue = fetch(ipAPI)
       .then(response => response.json())
@@ -66,7 +88,7 @@ export class MacroComponent implements OnInit {
   }
 
   // Range Slider
-  async rangeSwal(id) {
+  async rangeSwal(id: string) {
     const ipAPI = '//api.ipify.org?format=json'
     const inputValue = fetch(ipAPI)
       .then(response => response.json())
@@ -90,7 +112,7 @@ export class MacroComponent implements OnInit {
     }
   }
 
-  async text2XSwal(id) {
+  async text2XSwal(id: any) {
     const ipAPI = '//api.ipify.org?format=json'
     const inputValue = fetch(ipAPI)
       .then(response => response.json())
@@ -119,11 +141,11 @@ export class MacroComponent implements OnInit {
 
     if (ipAddress) {
       // Swal.fire(`Your IP address is ${ipAddress}`)
-      this.callWithParams(id, ipAddress);
+      this.callWithParams(id, ipAddress.join(','));
     }
   }
 
-  async textSwal(id) {
+  async textSwal(id: any) {
     const ipAPI = '//api.ipify.org?format=json'
     const inputValue = fetch(ipAPI)
       .then(response => response.json())
@@ -147,17 +169,20 @@ export class MacroComponent implements OnInit {
     }
   }
 
-  callWithParams(id, str1, int1?, bool1?) {
-    console.log(id, str1, int1, bool1);
-    let URL = '';
-    URL = this.APIAdvancePath + '?id=' + id;
-    URL+= str1 ? "&mzmdStr1="+str1 : '';
-    URL+= int1 ? "&mzmdInt1="+int1 : '';
-    URL+= bool1 ? "&mzmdBool1="+bool1 : '';
-
-    console.log('URL :', URL);
-    this.http.get(URL, {responseType: 'text'}).subscribe(data => {
-      console.log("Success: ", data);
-    })
+  callWithParams(id: string, str1: string, int1?: string | number | undefined, bool1?: string | undefined) {
+    setTimeout(() => {
+      console.log("Delayed for "+this.languageService.delayTimer+" second.");
+      console.log(id, str1, int1, bool1);
+      let URL = '';
+      URL = this.APIAdvancePath + '?id=' + id;
+      URL+= str1 ? "&mzmdStr1="+str1 : '';
+      URL+= int1 ? "&mzmdInt1="+int1 : '';
+      URL+= bool1 ? "&mzmdBool1="+bool1 : '';
+      
+      console.log('URL :', URL);
+      this.http.get(URL, {responseType: 'text'}).subscribe(data => {
+        console.log("Success: ", data);
+      })
+    }, (this.languageService.delayTimer*1000));
   }
 }
