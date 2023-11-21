@@ -41,11 +41,7 @@ export class MacroComponent implements OnInit {
       console.log(id);
       // const headers = { 'Authorization': 'Bearer my-token', 'My-Custom-Header': 'foobar' }
       let URL = this.APIBasicPath + '?id='+id;
-      this.http.get(URL, {responseType: 'text', headers: {
-        "access-control-allow-origin": "*",
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': '*',
-      }}).subscribe(data => {
+      this.http.get(URL, {responseType: 'text'}).subscribe(data => {
         console.log("Success: ", data);
         alert("Success: "+ data);
       })
